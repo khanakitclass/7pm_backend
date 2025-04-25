@@ -10,7 +10,7 @@ const router = express.Router();
 // http://localhost:8000/api/v1/category/get-categories
 router.get(
     "/list-categories",
-    auth(["admin", "employee", "user"]),
+    // auth(["admin", "employee", "user"]),
     CategoryController.listCategories
 );
 
