@@ -35,9 +35,9 @@ app.use(passport.session());
 
 googleLogin();
 
-app.get("/", () => {
+app.get("/", (req, res) => {
     console.log("Welcome to Fruitables Backend");
-    
+    res.status(200).json({message: "Welcome to Fruitables Backend"})
 })
 
 // http://localhost:8000/api/v1
