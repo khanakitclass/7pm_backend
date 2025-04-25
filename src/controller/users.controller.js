@@ -35,7 +35,7 @@ const generateTokens = async (userId) => {
 const registerUser = async (req, res) => {
   try {
     const { email, password } = req.body;
-    
+
 
     const user = await Users.findOne({ email: email });
 
@@ -56,34 +56,36 @@ const registerUser = async (req, res) => {
 
       const userData = await Users.findById(user._id).select("-password");
 
-      
+
       const otp = Math.floor(1000 + Math.random() * 9000);
 
       console.log(email, password, req.body);
-  
-      const statusEmail = await sendMail(email, "Verify Your Fruitable Account", `Your OTP is: ${otp}`); 
-  
+
+      const statusEmail = await sendMail(email, "Verify Your Fruitable Account", `Your OTP is: ${otp}`);
+
       console.log("statusEmail", statusEmail);
-      
-      
+
+
 
       if (statusEmail) {
         // req.session.email = email;
         // req.session.otp = otp;
         const options = {
           httpOnly: true,
-          secure: true
+          secure: true,
+          sameSite: 'None',
+          maxAge: 60 * 5 * 1000
         }
 
         const otpToken = jwt.sign({ otp, email }, process.env.OTP_TOKEN, { expiresIn: '5m' });
 
         return res.status(201)
-        .cookie("otpToken", otpToken, options)
-        .json({
-          success: true,
-          message: "Please verified OTP.",
-          data: userData
-        });
+          .cookie("otpToken", otpToken, options)
+          .json({
+            success: true,
+            message: "Please verified OTP.",
+            data: userData
+          });
       }
 
     } catch (error) {
@@ -150,14 +152,23 @@ const loginUser = async (req, res) => {
 
     const userData = await Users.findById(user._id).select("-password -refreshToken");
 
-    const options = {
+    const optionsAcc = {
       httpOnly: true,
-      secure: true
+      secure: true,
+      sameSite: 'None',
+      maxAge: 60 * 60 * 1000
+    }
+
+    const optionsRef = {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'None',
+      maxAge: 60 * 60 * 24 * 1000
     }
 
     res.status(200)
-      .cookie("accessToken", accessToken, options)
-      .cookie("refreshToken", refreshToken, options)
+      .cookie("accessToken", accessToken, optionsAcc)
+      .cookie("refreshToken", refreshToken, optionsRef)
       .json({
         success: true,
         data: userData,
@@ -214,14 +225,23 @@ const generateNewTokens = async (req, res) => {
 
       const userData = await Users.findById(user._id).select("-password -refreshToken");
 
-      const options = {
+      const optionsAcc = {
         httpOnly: true,
-        secure: true
+        secure: true,
+        sameSite: 'None',
+        maxAge: 60 * 60 * 1000
+      }
+
+      const optionsRef = {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'None',
+        maxAge: 60 * 60 * 24 * 1000
       }
 
       res.status(200)
-        .cookie("accessToken", accessToken, options)
-        .cookie("refreshToken", refreshToken, options)
+        .cookie("accessToken", accessToken, optionsAcc)
+        .cookie("refreshToken", refreshToken, optionsRef)
         .json({
           success: true,
           data: userData,
@@ -263,7 +283,8 @@ const logOutUser = async (req, res) => {
 
     const options = {
       httpOnly: true,
-      secure: true
+      secure: true,
+      sameSite: 'None'
     }
 
     res.status(200)
@@ -392,10 +413,10 @@ const checkOTPEmail = async (req, res) => {
     const decoded = await jwt.verify(token, process.env.OTP_TOKEN);
 
     console.log(decoded);
-    
+
 
     if (decoded.otp == otp && decoded.email == email) {
-    // if (req.session.otp == otp && req.session.email == email) {
+      // if (req.session.otp == otp && req.session.email == email) {
       const user = await Users.findOne({ email: email });
 
       user.isVerified = true;
