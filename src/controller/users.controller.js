@@ -39,7 +39,7 @@ const registerUser = async (req, res) => {
 
     console.log(email, password, req.body);
 
-    const statusEmail = sendMail(email, "Verify Your Fruitable Account", `Your OTP is: ${otp}`);
+    const statusEmail = sendMail(email, "Verify Your Fruitable Account", `Your OTP is: ${otp}`); 
 
     console.log("statusEmail", statusEmail);
     
