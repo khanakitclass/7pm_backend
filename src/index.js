@@ -13,7 +13,7 @@ const connectChat = require('./utils/socketIO');
 const app = express();
 
 const corsOptions = {
-    origin: 'http://localhost:3000',
+    origin: 'https://7pm-frontend-lxoq.vercel.app',
     optionsSuccessStatus: 200,
     credentials: true
 }
