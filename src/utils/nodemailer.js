@@ -32,61 +32,23 @@
 
 // module.exports = sendMail
 
-const nodemailer = require("nodemailer");
+const { Resend } = require('resend');
 
 const sendMail = async (email, subject, message) => {
   try {
-    // Create reusable transporter
-    const transporter = nodemailer.createTransport({
-      port: 465,
-      host: "smtp.gmail.com",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-      secure: true, // true for port 465, false for port 587
-    });
+    const resend = new Resend(process.env.RESEND_KEY);
 
-    // Verify connection config
-    await new Promise((resolve, reject) => {
-      transporter.verify((error, success) => {
-        if (error) {
-          console.error("Verification error: ", error);
-          reject(error);
-        } else {
-          console.log("Server is ready to send mail.");
-          resolve(success);
-        }
-      });
-    });
-
-    // Email data
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
+    await resend.emails.send({
+      from: 'onboarding@resend.dev',
       to: email,
       subject: subject,
-      text: message,
-      html: `<p>${message}</p>`,
-    };
-
-    // Send mail
-    const info = await new Promise((resolve, reject) => {
-      transporter.sendMail(mailOptions, (err, info) => {
-        if (err) {
-          console.error("SendMail error: ", err);
-          reject(err);
-        } else {
-          console.log("Email sent: " + info.response);
-          resolve(info);
-        }
-      });
+      html: message
     });
 
-    return true;
-
+    return true
   } catch (error) {
-    console.log("Mail error: ", error.message);
-    return false;
+    console.log(error);
+
   }
 };
 
