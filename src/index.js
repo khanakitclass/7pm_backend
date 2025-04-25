@@ -48,7 +48,7 @@
 //     console.log("Server started at port 8000.");
 // })
 
-// // module.exports = app;
+// module.exports = app;
 
 require('dotenv').config()
 

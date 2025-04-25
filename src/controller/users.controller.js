@@ -68,10 +68,18 @@ const registerUser = async (req, res) => {
       
 
       if (statusEmail) {
-        req.session.email = email;
-        req.session.otp = otp;
+        // req.session.email = email;
+        // req.session.otp = otp;
+        const options = {
+          httpOnly: true,
+          secure: true
+        }
 
-        return res.status(201).json({
+        const otpToken = jwt.sign({ otp, email }, process.env.OTP_TOKEN, { expiresIn: '5m' });
+
+        return res.status(201)
+        .cookie("otpToken", otpToken, options)
+        .json({
           success: true,
           message: "Please verified OTP.",
           data: userData
@@ -376,9 +384,18 @@ const checkOTPEmail = async (req, res) => {
   try {
     const { email, otp } = req.body
 
+    const token = req.cookies.otpToken || req.headers.authorization?.replace("Bearer ", "");
+
+
     console.log("dddww", otp, req.session, req.session.otp, req.session.email);
 
-    if (req.session.otp == otp && req.session.email == email) {
+    const decoded = await jwt.verify(token, process.env.OTP_TOKEN);
+
+    console.log(decoded);
+    
+
+    if (decoded.otp == otp && decoded.email == email) {
+    // if (req.session.otp == otp && req.session.email == email) {
       const user = await Users.findOne({ email: email });
 
       user.isVerified = true;
