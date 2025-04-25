@@ -35,9 +35,14 @@ const generateTokens = async (userId) => {
 const registerUser = async (req, res) => {
   try {
     const { email, password } = req.body;
+    const otp = Math.floor(1000 + Math.random() * 9000);
 
     console.log(email, password, req.body);
 
+    const statusEmail = sendMail(email, "Verify Your Fruitable Account", `Your OTP is: ${otp}`);
+
+    console.log("statusEmail", statusEmail);
+    
 
     const user = await Users.findOne({ email: email });
 
@@ -58,9 +63,9 @@ const registerUser = async (req, res) => {
 
       const userData = await Users.findById(user._id).select("-password");
 
-      const otp = Math.floor(1000 + Math.random() * 9000);
+      
 
-      const statusEmail = sendMail(email, "Verify Your Fruitable Account", `Your OTP is: ${otp}`);
+      
 
       if (statusEmail) {
         req.session.email = email;
