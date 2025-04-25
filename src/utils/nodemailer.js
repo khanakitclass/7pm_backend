@@ -42,7 +42,7 @@ const sendMail = async (email, subject, message) => {
       from: 'onboarding@resend.dev',
       to: email,
       subject: subject,
-      html: message
+      html: message 
     });
 
     return true
