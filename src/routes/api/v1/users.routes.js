@@ -70,4 +70,9 @@ router.post(
     UsersController.checkOTP
 );
 
+router.post(
+    "/verify-otp-email",
+    UsersController.checkOTPEmail
+);
+
 module.exports = router;

@@ -60,15 +60,21 @@ const registerUser = async (req, res) => {
 
       const otp = Math.floor(1000 + Math.random() * 9000);
 
-      // sendMail(email, "Verify Your Fruitable Account", `Your OTP is: ${otp}`);
+      const statusEmail = sendMail(email, "Verify Your Fruitable Account", `Your OTP is: ${otp}`);
 
-      sendOTP();
+      if (statusEmail) {
+        req.session.email = email;
+        req.session.otp = otp;
 
-      return res.status(201).json({
-        success: true,
-        message: "Please verified OTP.",
-        data: userData
-      });
+        return res.status(201).json({
+          success: true,
+          message: "Please verified OTP.",
+          data: userData
+        });
+      }
+
+
+
 
     } catch (error) {
       return res.status(500).json({
@@ -314,15 +320,15 @@ const checkOTP = async (req, res) => {
 
     const checkStatus = await createVerificationCheck(otp);
 
-    console.log("checkStatuscheckStatus",checkStatus);
-    
+    console.log("checkStatuscheckStatus", checkStatus);
+
 
     if (checkStatus === "approved") {
-      const user = await Users.findOne({email: email});
+      const user = await Users.findOne({ email: email });
 
       user.isVerified = true;
 
-      await user.save({validateBeforeSave: false});
+      await user.save({ validateBeforeSave: false });
 
       const docDefinition = {
         content: [
@@ -357,9 +363,67 @@ const checkOTP = async (req, res) => {
       return res.status(400).json({ success: false, message: "Invalid OTP." });
     }
   } catch (error) {
-    return res.status(500).json({ 
-      success: false, 
-      message: "Internal server error: " + error.message 
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error: " + error.message
+    });
+  }
+}
+
+const checkOTPEmail = async (req, res) => {
+  try {
+    const { email, otp } = req.body
+
+    console.log("dddww", otp, req.session, req.session.otp, req.session.email);
+
+    if (req.session.otp == otp && req.session.email == email) {
+      const user = await Users.findOne({ email: email });
+
+      user.isVerified = true;
+
+      await user.save({ validateBeforeSave: false });
+
+      const docDefinition = {
+        content: [
+          { text: 'Your Details', style: 'mainHeading' },
+          {
+            style: 'userTable',
+            table: {
+              body: [
+                ['Name', 'Email', 'Role'],
+                [`${user.name}`, `${user.email}`, `${user.role}`]
+              ]
+            }
+          },
+        ],
+        styles: {
+          mainHeading: {
+            fontSize: 18,
+            alignment: "center",
+            bold: true,
+            margin: [0, 0, 0, 10]
+          },
+          userTable: {
+
+          }
+        }
+      }
+
+      await createPDF(docDefinition, user.name);
+
+      req.session.otp = null;
+      req.session.email = null;
+
+      return res.status(200).json({ success: true, message: "OTP verified successfully. Please Login." });
+    } else {
+      return res.status(400).json({ success: false, message: "Invalid OTP." });
+    }
+
+
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error: " + error.message
     });
   }
 }
@@ -371,5 +435,6 @@ module.exports = {
   logOutUser,
   checkAuth,
   generateTokens,
-  checkOTP
+  checkOTP,
+  checkOTPEmail
 }
