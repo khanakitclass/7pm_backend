@@ -44,8 +44,9 @@ app.get("/", (req, res) => {
 app.use("/api/v1", router);
 
 // http://localhost:8000
-app.listen(process.env.PORT, () => {
-    console.log("Server started at port 8000.");
-})
+// app.listen(process.env.PORT, () => {
+//     console.log("Server started at port 8000.");
+// })
 
+module.exports = app;
 
