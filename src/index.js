@@ -65,7 +65,7 @@ const connectChat = require('./utils/socketIO');
 const app = express();
 
 const corsOptions = {
-    origin: 'https://7pm-frontend-lxoq.vercel.app',
+    origin: 'https://7pm-frontend.vercel.app',
     optionsSuccessStatus: 200,
     credentials: true
 }
@@ -85,7 +85,7 @@ app.use(require('express-session')({ secret: process.env.EXPRESS_SESSION_SECRET,
 app.use(passport.initialize());
 app.use(passport.session());
 
-googleLogin();
+googleLogin(); 
 
 app.get("/", (req, res) => {
     console.log("Welcome to Fruitables Backend");
