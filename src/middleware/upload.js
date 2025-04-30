@@ -20,13 +20,13 @@ const storage = multer.memoryStorage({
         }
         
 
-        fs.mkdir(filePath, {recursive: true}, (err) => {
-            if (err) {
-                console.log(err);
-            }
+        // fs.mkdir(filePath, {recursive: true}, (err) => {
+        //     if (err) {
+        //         console.log(err);
+        //     }
 
             
-        })
+        // })
 
         cb(null, filePath);
         
