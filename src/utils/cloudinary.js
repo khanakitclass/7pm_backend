@@ -1,4 +1,5 @@
 const cloudinary = require("cloudinary").v2;
+const fs = require('fs');
 
 const uploadFileCloudinary = async (localPath, folderName) => {
   try {
@@ -22,6 +23,8 @@ const uploadFileCloudinary = async (localPath, folderName) => {
       });
 
     console.log(uploadResult);
+
+    fs.unlinkSync(localPath);
 
     return uploadResult
 
