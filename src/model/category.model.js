@@ -13,9 +13,15 @@ const categorySchema = new mongoose.Schema(
             required: true,
             trim: true
         },
+        // cat_img: {
+        //     type: String,
+        //     required: true
+        // }
         cat_img: {
-            type: String,
-            required: true
+            type: {
+                public_id: String,
+                url: String
+            }
         }
     },
     {

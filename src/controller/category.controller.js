@@ -1,6 +1,6 @@
 const Categories = require("../model/category.model");
 const fs = require("fs");
-const uploadFileCloudinary = require("../utils/cloudinary")
+const {uploadFileCloudinary, deleteFileCloudinary} = require("../utils/cloudinary")
 
 const listCategories = async (req, res) => {
     try {
@@ -64,7 +64,7 @@ const addCategory = async (req, res) => {
 
         console.log("sdcasdc", uploadC);
         
-        const category = await Categories.create({ ...req.body, cat_img: uploadC.url });
+        const category = await Categories.create({ ...req.body, cat_img: {url: uploadC.url, public_id: uploadC.public_id}});
 
 
 
@@ -180,15 +180,20 @@ const deleteCategory = async (req, res) => {
         }
 
 
-        fs.unlinkSync(category.cat_img, (err) => {
-            if (err) {
-                return res.status(400).json({
-                    success: false,
-                    data: null,
-                    message: "Error delete category image: " + err.message
-                });
-            }
-        })
+        // fs.unlinkSync(category.cat_img, (err) => {
+        //     if (err) {
+        //         return res.status(400).json({
+        //             success: false,
+        //             data: null,
+        //             message: "Error delete category image: " + err.message
+        //         });
+        //     }
+        // })
+
+        console.log(category, "categorycategory");
+        
+
+        await deleteFileCloudinary(category.cat_img.public_id);
 
         return res.status(200).json({
             success: true,
