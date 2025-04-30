@@ -71,8 +71,9 @@ const registerUser = async (req, res) => {
       if (statusEmail) {
         // req.session.email = email;
         // req.session.otp = otp;
+
         const options = {
-          httpOnly: true,
+          httpOnly: true,  
           secure: true,
           sameSite: 'None',
           maxAge: 60 * 5 * 1000
@@ -423,37 +424,9 @@ const checkOTPEmail = async (req, res) => {
       user.isVerified = true;
 
       await user.save({ validateBeforeSave: false });
-
-      const docDefinition = {
-        content: [
-          { text: 'Your Details', style: 'mainHeading' },
-          {
-            style: 'userTable',
-            table: {
-              body: [
-                ['Name', 'Email', 'Role'],
-                [`${user.name}`, `${user.email}`, `${user.role}`]
-              ]
-            }
-          },
-        ],
-        styles: {
-          mainHeading: {
-            fontSize: 18,
-            alignment: "center",
-            bold: true,
-            margin: [0, 0, 0, 10]
-          },
-          userTable: {
-
-          }
-        }
-      }
-
-      await createPDF(docDefinition, user.name);
-
-      req.session.otp = null;
-      req.session.email = null;
+      
+      // req.session.otp = null;
+      // req.session.email = null;
 
       return res.status(200).json({ success: true, message: "OTP verified successfully. Please Login." });
     } else {

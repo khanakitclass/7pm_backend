@@ -48,7 +48,7 @@ const sendMail = async (email, subject, message) => {
     return true
   } catch (error) {
     console.log(error);
-
+    throw new Error("Error in Resend Email sent.")
   }
 };
 
